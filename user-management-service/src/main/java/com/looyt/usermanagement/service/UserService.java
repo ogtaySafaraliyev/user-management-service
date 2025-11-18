@@ -9,92 +9,104 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-    
-    private final UserRepository userRepository;
-    
-    // Create User
-    public UserResponseDTO createUser(UserRequestDTO requestDTO) {
-        log.info("Creating user with email: {}", requestDTO.getEmail());
-        
-        if (userRepository.existsByEmail(requestDTO.getEmail())) {
-            throw new RuntimeException("Email already exists: " + requestDTO.getEmail());
-        }
-        
-        User user = new User();
-        user.setName(requestDTO.getName());
-        user.setEmail(requestDTO.getEmail());
-        user.setPhone(requestDTO.getPhone());
-        user.setRole(requestDTO.getRole());
-        
-        User savedUser = userRepository.save(user);
-        log.info("User created successfully with id: {}", savedUser.getId());
-        
-        return mapToResponseDTO(savedUser);
-    }
-    
-    // Get User by ID
-    public UserResponseDTO getUserById(Long id) {
-        log.info("Fetching user with id: {}", id);
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
-        return mapToResponseDTO(user);
-    }
-    
-    // Get All Users
-    public List<UserResponseDTO> getAllUsers() {
-        log.info("Fetching all users");
-        return userRepository.findAll().stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
-    }
-    
-    // Update User
-    public UserResponseDTO updateUser(Long id, UserRequestDTO requestDTO) {
-        log.info("Updating user with id: {}", id);
-        
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(id));
-        
-        user.setName(requestDTO.getName());
-        user.setEmail(requestDTO.getEmail());
-        user.setPhone(requestDTO.getPhone());
-        user.setRole(requestDTO.getRole());
-        
-        User updatedUser = userRepository.save(user);
-        log.info("User updated successfully with id: {}", updatedUser.getId());
-        
-        return mapToResponseDTO(updatedUser);
-    }
-    
-    // Delete User
-    public void deleteUser(Long id) {
-        log.info("Deleting user with id: {}", id);
-        
-        if (!userRepository.existsById(id)) {
-            throw new UserNotFoundException(id);
-        }
-        
-        userRepository.deleteById(id);
-        log.info("User deleted successfully with id: {}", id);
-    }
-    
-    // Helper method to map Entity to DTO
-    private UserResponseDTO mapToResponseDTO(User user) {
-        return new UserResponseDTO(
-            user.getId(),
-            user.getName(),
-            user.getEmail(),
-            user.getPhone(),
-            user.getRole(),
-            user.getCreatedAt(),
-            user.getUpdatedAt()
-        );
-    }
+
+	private final UserRepository userRepository;
+
+	// Create User
+	public UserResponseDTO createUser(UserRequestDTO requestDTO) {
+		log.info("Creating user with email: {}", requestDTO.getEmail());
+
+		if (userRepository.existsByEmail(requestDTO.getEmail())) {
+			throw new RuntimeException("Email already exists: " + requestDTO.getEmail());
+		}
+
+		User user = new User();
+		user.setName(requestDTO.getName());
+		user.setEmail(requestDTO.getEmail());
+		user.setPhone(requestDTO.getPhone());
+		user.setRole(requestDTO.getRole());
+
+		User savedUser = userRepository.save(user);
+		log.info("User created successfully with id: {}", savedUser.getId());
+
+		return mapToResponseDTO(savedUser);
+	}
+
+	// Get User by ID
+	public UserResponseDTO getUserById(Long id) {
+		log.info("Fetching user with id: {}", id);
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+		return mapToResponseDTO(user);
+	}
+
+//	// Get All Users
+//	public List<UserResponseDTO> getAllUsers() {
+//		log.info("Fetching all users");
+//		return userRepository.findAll().stream().map(this::mapToResponseDTO).collect(Collectors.toList());
+//	}
+
+	// Get All Users with Pagination
+	public Page<UserResponseDTO> getAllUsers(int page, int size) {
+		log.info("Fetching users - page: {}, size: {}", page, size);
+
+		Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+
+		return userRepository.findAll(pageable).map(this::mapToResponseDTO);
+	}
+
+	// Update User
+	public UserResponseDTO updateUser(Long id, UserRequestDTO requestDTO) {
+		log.info("Updating user with id: {}", id);
+
+		User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+
+		user.setName(requestDTO.getName());
+		user.setEmail(requestDTO.getEmail());
+		user.setPhone(requestDTO.getPhone());
+		user.setRole(requestDTO.getRole());
+
+		User updatedUser = userRepository.save(user);
+		log.info("User updated successfully with id: {}", updatedUser.getId());
+
+		return mapToResponseDTO(updatedUser);
+	}
+
+	// Delete User
+	public void deleteUser(Long id) {
+		log.info("Deleting user with id: {}", id);
+
+		if (!userRepository.existsById(id)) {
+			throw new UserNotFoundException(id);
+		}
+
+		userRepository.deleteById(id);
+		log.info("User deleted successfully with id: {}", id);
+	}
+
+	// Helper method to map Entity to DTO
+	private UserResponseDTO mapToResponseDTO(User user) {
+		return new UserResponseDTO(user.getId(), user.getName(), user.getEmail(), user.getPhone(), user.getRole(),
+				user.getCreatedAt(), user.getUpdatedAt());
+	}
+
+	// Search User by Email
+	public UserResponseDTO getUserByEmail(String email) {
+		log.info("Searching user with email: {}", email);
+		User user = userRepository.findByEmail(email)
+				.orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+		return mapToResponseDTO(user);
+	}
+
 }
