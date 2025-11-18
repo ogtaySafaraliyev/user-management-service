@@ -28,7 +28,7 @@ A RESTful API service for managing users built with Spring Boot and PostgreSQL.
 
 ## 🛠️ Tech Stack
 
-- **Java 17**
+- **Java 21**
 - **Spring Boot 3.x**
 - **PostgreSQL 15**
 - **Docker & Docker Compose**
@@ -40,7 +40,7 @@ A RESTful API service for managing users built with Spring Boot and PostgreSQL.
 
 ### Prerequisites
 
-- Java 17+
+- Java 21+
 - PostgreSQL
 - Docker & Docker Compose (optional)
 
@@ -53,7 +53,7 @@ cd user-management-service
 # Start application and database
 docker-compose up --build
 
-# Application runs on http://localhost:8080
+# Application runs on http://localhost:8081
 ```
 
 ### Option 2: Run Locally
