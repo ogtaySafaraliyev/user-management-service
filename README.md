@@ -195,6 +195,34 @@ curl -X DELETE https://your-app-name.onrender.com/api/users/1
 
 ---
 
+### 7. Get Users with Pagination
+```bash
+curl "https://your-app-name.onrender.com/api/users?page=0&size=5"
+```
+
+**Response (200 OK):**
+```json
+{
+  "users": [...],
+  "currentPage": 0,
+  "totalItems": 15,
+  "totalPages": 3
+}
+```
+
+### 8. Search User by Email
+```bash
+curl "https://your-app-name.onrender.com/api/users/search?email=john.doe@example.com"
+```
+
+### 9. API Info
+```bash
+curl https://your-app-name.onrender.com/api/info
+```
+
+**Shows all available endpoints**
+
+
 ## 🚨 Error Responses
 
 ### Validation Error (400 Bad Request)
