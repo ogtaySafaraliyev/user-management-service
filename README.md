@@ -5,16 +5,6 @@ user-management-service task from Looyt company
 
 A RESTful API service for managing users built with Spring Boot and PostgreSQL.
 
-## 🚀 Live Demo
-
-**Base URL:** `https://your-app-name.onrender.com`
-
-**Health Check:** `https://your-app-name.onrender.com/api/users/health`
-
-⚠️ **Note:** Free tier may take 30-60 seconds for first request (cold start).
-
----
-
 ## 📋 Features
 
 - Create, Read, Update, Delete (CRUD) users
@@ -279,6 +269,16 @@ docker-compose down
 # Remove volumes (clean database)
 docker-compose down -v
 ```
+
+---
+
+## 🚀 Live Demo
+
+**Base URL:** `https://your-app-name.onrender.com`
+
+**Health Check:** `https://your-app-name.onrender.com/api/users/health`
+
+⚠️ **Note:** Free tier may take 30-60 seconds for first request (cold start).
 
 ---
 
